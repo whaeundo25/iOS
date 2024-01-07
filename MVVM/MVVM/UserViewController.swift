@@ -10,7 +10,7 @@
 import UIKit
 import Combine
 
-class ViewController: UIViewController {
+class UserViewController: UIViewController {
     @IBOutlet weak var nameField: UITextField!
     @IBOutlet weak var ageField: UITextField!
     
@@ -57,7 +57,7 @@ class ViewController: UIViewController {
     
 }
 
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension UserViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
         
@@ -68,13 +68,37 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 //        cell.ageLabel.text = viewModel.user(index: indexPath.row).age.description
         
 //        cell.nameLabel.text = viewModel.userName(index: indexPath.row)
-        cell.ageLabel.text = viewModel.userAge(index: indexPath.row)
+//        cell.ageLabel.text = viewModel.userAge(index: indexPath.row)
         
         //sink는 바인딩하는 것을 의미함
         //viewModel의 users 부분이 바뀌게 되면 자동적으로 클로저 안에 있는 내용이 실행된다.
-        viewModel.$users.sink { users in
-            cell.nameLabel.text = users[indexPath.row].name
-        }.store(in: &cancellables)
+//        viewModel.$users.sink { users in
+//            cell.nameLabel.text = users[indexPath.row].name
+//        }.store(in: &cancellables)
+        
+//        // cell과 바로 연결하는 방법
+//        viewModel.$users.sink { users in
+//            cell.nameLabel.text = users[indexPath.row].name
+//        }.store(in: &cell.cancellables)
+        
+//        viewModel.userName2(index: indexPath.row) { name in
+//            cell.nameLabel.text = name
+//        }
+//        
+//        viewModel.userAge2(index: indexPath.row) { age in
+//            cell.ageLabel.text = age
+//        }
+        
+        // 테이블 뷰가 화면 밖으로 나갔다 돌아왔을 때 여러번 실행되지 않도록 개선된 코드
+        viewModel.userName3(index: indexPath.row, store: &cell.cancellables) { name in
+            cell.nameLabel.text = name
+        }
+        
+        viewModel.userAge3(index: indexPath.row, store: &cell.cancellables) { age in
+            cell.ageLabel.text = age
+        }
+        
+        
         
         return cell
     }
